@@ -182,9 +182,8 @@ public class SpeechRecognizerManager {
 
             String text = hypothesis.getHypstr();
             Log.d(TAG,text);
-            if (text.equals(KEYPHRASE)) {
+            if (text.contains(KEYPHRASE)) {
                 mPocketSphinxRecognizer.cancel();
-
                 mGoogleSpeechRecognizer.startListening(mSpeechRecognizerIntent);
                 Toast.makeText(mContext, "You said: "+text, Toast.LENGTH_SHORT).show();
 
