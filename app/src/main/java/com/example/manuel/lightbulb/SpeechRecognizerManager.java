@@ -59,7 +59,7 @@ public class SpeechRecognizerManager {
     protected Intent mSpeechRecognizerIntent;
     protected android.speech.SpeechRecognizer mGoogleSpeechRecognizer;
     private Context mContext;
-
+    private OnResultListener mOnResultListener;
 
     public SpeechRecognizerManager(Context context) {
         this.mContext = context;
@@ -258,31 +258,22 @@ public class SpeechRecognizerManager {
 
         @Override
         public void onResults(Bundle results) {
-            if ((results != null)
-                    && results.containsKey(android.speech.SpeechRecognizer.RESULTS_RECOGNITION)) {
-
-                ArrayList<String> heard = results
-                        .getStringArrayList(android.speech.SpeechRecognizer.RESULTS_RECOGNITION);
-                float[] scores = results
-                        .getFloatArray(android.speech.SpeechRecognizer.CONFIDENCE_SCORES);
+            if (results != null && results.containsKey(android.speech.SpeechRecognizer.RESULTS_RECOGNITION)) {
+                ArrayList<String> heard = results.getStringArrayList(android.speech.SpeechRecognizer.RESULTS_RECOGNITION);
+                float[] scores = results.getFloatArray(android.speech.SpeechRecognizer.CONFIDENCE_SCORES);
 
                 for (int i = 0; i < heard.size(); i++) {
-                    Log.d(TAG, "onResultsheard:" + heard.get(i)
-                            + " confidence:" + scores[i]);
-
+                    Log.d(TAG, "onResultsheard:" + heard.get(i) + " confidence:" + scores[i]);
                 }
 
-
                 //send list of words to activity
-
-
+                if (mOnResultListener != null) {
+                    mOnResultListener.OnResult(heard);
+                }
             }
 
             mPocketSphinxRecognizer.startListening(KWS_SEARCH);
-
-
         }
-
 
         @Override
         public void onEvent(int eventType, Bundle params) {
@@ -291,11 +282,12 @@ public class SpeechRecognizerManager {
 
     }
 
-
+    public void setOnResultListener(OnResultListener onResultListener) {
+        mOnResultListener = onResultListener;
+    }
 
     public interface OnResultListener
     {
         public void OnResult(ArrayList<String> commands);
     }
-
 }
